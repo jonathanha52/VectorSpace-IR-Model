@@ -1,19 +1,20 @@
 import math
 import numpy
+import json
 class TfidfVectorSpace:
-    def __init__(self):
+    def __init__(self, docMap = None):
         self.idfVec = {}
-        self.totalDoc = 0
         self.tfidfVec = {}
+        self.docMap = {}
         self.countDoc = 0
-        self.termSet = set()
+        self.termMap = {}
+        self.parseId(docMap)
     def fit(self, corpus):
-        docid = 0
         self.countDoc = len(corpus)
         for doc in corpus:
             temp = set(doc)
             for term in temp:
-                self.termSet.add(term)
+                self.termMap.add(term)
                 if term not in self.idfVec:
                     self.idfVec[term] = 1
                 else:
@@ -21,13 +22,20 @@ class TfidfVectorSpace:
         for doc in corpus:
             countTerm = len(doc)
             self.tfidfVec[docid] = []
-            for key in self.termSet:
+            for key in self.termMap:
                 self.tfidfVec[docid].append((doc.count(key)/countTerm) * (math.log(self.countDoc/(1+self.idfVec[key]),2)))
             docid += 1
+    def parseId(self, docMap):
+        if docMap != None:
+            try:
+                with open(docMap) as f:
+                    self.docID = json.load(f)
+            except:
+                print(f"Can't open {docMap}")
     def vectorize(self, doc):
         tfidfVec = []
         queryLength = len(doc)
-        for key in self.termSet:
+        for key in self.termMap:
             tfidfVec.append((doc.count(key)/queryLength)* (math.log(1/(1+self.idfVec[key]),2)))
         return tfidfVec
     def ranking(self, vectorized, top=10, dec=3):
