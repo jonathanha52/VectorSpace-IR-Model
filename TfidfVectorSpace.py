@@ -1,17 +1,25 @@
 import math
 import numpy
 import json
+import os
+from Preprocess import preprocess
+
 class TfidfVectorSpace:
-    def __init__(self, docMap = None):
+    def __init__(self):
         self.idfVec = {}
         self.tfidfVec = {}
         self.docMap = {}
-        self.countDoc = 0
         self.termMap = {}
-        self.parseId(docMap)
-    def fit(self, corpus):
-        self.countDoc = len(corpus)
-        for doc in corpus:
+        self.corpus_name = ''
+        self.countDoc = 0
+
+    def loadCorpus(self, dirToCorpus):
+        self.__mapId(dirToCorpus)
+        self.__processCorpus(dirToCorpus)
+        
+        listfile = os.listdir(dirToCorpus)
+        self.countDoc = len(listfile)
+        for doc in listfile:
             temp = set(doc)
             for term in temp:
                 self.termMap.add(term)
@@ -21,17 +29,39 @@ class TfidfVectorSpace:
                     self.idfVec[term] += 1
         for doc in corpus:
             countTerm = len(doc)
+            docid = self.docMap[doc]
             self.tfidfVec[docid] = []
             for key in self.termMap:
                 self.tfidfVec[docid].append((doc.count(key)/countTerm) * (math.log(self.countDoc/(1+self.idfVec[key]),2)))
             docid += 1
-    def parseId(self, docMap):
-        if docMap != None:
-            try:
-                with open(docMap) as f:
-                    self.docID = json.load(f)
-            except:
-                print(f"Can't open {docMap}")
+
+    def __mapId(self, dirToCorpus):
+        try:
+            corpus_name = os.path.split(dirToCorpus)[1] + '.json'
+            corpusId =  os.getcwd() + os.path.split(dirToCorpus)[1] + '.json'
+            with open(corpus_name) as f:
+                self.docMap = json.load(f)
+        except:
+            print('Existing id map not found!\nMapping new doc id')
+        try:
+            listfile = os.listdir(dirToCorpus)
+        except:
+            print('Directory not exist!')
+        if len(listfile) == 0:
+            print('Empty corpus!')
+            return
+        current_docid = 0
+        for f in listfile:
+            self.docMap[current_docid] = f
+            self.docMap[f] = current_docid
+            current_docid += 1
+        n = input(f'Do you want to write doc id mapping to {corpus_name}.json? y/n')
+        if n.lower() == 'y':
+            with open(corpusId, 'w+') as f:
+                json.dump(self.docMap, f)
+    def __processCorpus(self, dirToCorpus):
+        for 
+    
     def vectorize(self, doc):
         tfidfVec = []
         queryLength = len(doc)

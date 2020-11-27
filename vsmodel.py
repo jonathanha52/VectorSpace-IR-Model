@@ -1,8 +1,3 @@
-from nltk import sent_tokenize
-from nltk.tokenize import word_tokenize
-from nltk.probability import FreqDist
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
 from TfidfVectorSpace import TfidfVectorSpace
 import os
 import json
@@ -23,19 +18,6 @@ stoplist = stopwords.words('english')
 ps = PorterStemmer()
 corpus_list = {}
 listfile = os.listdir(os.path.join(root,corpus_dir))
-
-#Corpus id mapping
-mapping_dir = os.path.join(root, f'{corpus_dir} id_map.json')
-if not os.path.isfile(mapping_dir):
-    print('Mapping not existing!')
-    print(f'Creating new map for {corpus_dir}')
-    current_docid = 0
-    for f in listfile:
-        docid_map[current_docid] = f
-        docid_map[f] = current_docid
-        current_docid += 1
-    with open(mapping_dir) as f:
-        json.dumps(docid_map, f)
 
 #Corpus processing
 vectorSpace = TfidfVectorSpace(mapping_dir)
