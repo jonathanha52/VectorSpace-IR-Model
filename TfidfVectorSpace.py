@@ -14,7 +14,11 @@ class TfidfVectorSpace:
         self.countDoc = 0
 
     def loadCorpus(self, dirToCorpus):
-        self.__mapId(dirToCorpus)
+        try:
+            self.__mapId(dirToCorpus)
+        except Exception as e:
+            print(e)
+
         self.__processCorpus(dirToCorpus)
         
         listfile = os.listdir(dirToCorpus)
@@ -46,10 +50,9 @@ class TfidfVectorSpace:
         try:
             listfile = os.listdir(dirToCorpus)
         except:
-            print('Directory not exist!')
+            print('Directory don\'t exist!')
         if len(listfile) == 0:
-            print('Empty corpus!')
-            return
+            raise ValueError(f'{dirToCorpus} is empty!')
         current_docid = 0
         for f in listfile:
             self.docMap[current_docid] = f
@@ -60,7 +63,10 @@ class TfidfVectorSpace:
             with open(corpusId, 'w+') as f:
                 json.dump(self.docMap, f)
     def __processCorpus(self, dirToCorpus):
-        for 
+        listfile = os.listdir(dirToCorpus)
+        for f in listfile:
+            with open(os.path.join(dirToCorpus, f)) as c:
+
     
     def vectorize(self, doc):
         tfidfVec = []
@@ -68,6 +74,7 @@ class TfidfVectorSpace:
         for key in self.termMap:
             tfidfVec.append((doc.count(key)/queryLength)* (math.log(1/(1+self.idfVec[key]),2)))
         return tfidfVec
+        
     def ranking(self, vectorized, top=10, dec=3):
         ranked = []
         a = numpy.array(vectorized)
