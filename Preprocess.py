@@ -16,6 +16,6 @@ class preprocess():
         self.stopwords = stopwords
         self.stemmer = stm
     def process(self, inp):
-        tokenized = [x for x in word_tokenize(inp) if x not in punctuation or x not in stopwords]
+        tokenized = [x for x in word_tokenize(inp) if x not in punctuation or x not in self.stopwords]
         stemmed = [self.stemmer(x) for x in tokenized]
         return stemmed
