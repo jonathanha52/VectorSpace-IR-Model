@@ -5,6 +5,7 @@ class QueryParser:
         self.processedQuery = ''
         self.stopwords = st if st != None else 
         self.processor = preprocess(st)
+        self.posting = 
     def parse(self, query):
         self.processedQuery = self.processor(query)
         tfidfVect = []
