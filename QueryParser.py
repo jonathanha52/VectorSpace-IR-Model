@@ -1,12 +1,10 @@
 from Preprocess import preprocess
 
 class QueryParser:
-    def __init__(self, st = None):
+    def __init__(self):
         self.processedQuery = ''
-        self.stopwords = st if st != None else st
-        self.processor = preprocess(st)
+        self.processor = preprocess()
         self.distinctTerm = set()
-    def parse(self, query):
-        self.processedQuery = self.processor.process(query)
-        self.distinctTerm = set(self.processedQuery)
-        return self.processedQuery, self.distinctTerm
+    def parse(self, query, lemma = False, stem = False):
+        self.processedQuery = self.processor.process(query, lemma, stem)
+        return self.processedQuery

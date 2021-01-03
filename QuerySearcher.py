@@ -1,6 +1,7 @@
 import json
 import os
-import numpy
+from numpy import dot
+from numpy.linalg import norm
 import math
 class QuerySearcher:
     def __init__(self):
@@ -17,44 +18,40 @@ class QuerySearcher:
             self.index = json.load(f)
         with open(os.path.join(path, 'id.json')) as f:
             self.id = json.load(f)
-    def search(self, query, distinctTerm):
-        '''
-        query: query parsed by query parser
-        '''
+    def search(self, query):
+        #query: query parsed by query parser
+        queryWeight = {}
         doclist = set()
         ranked = []
-        print(distinctTerm)
-        for q in distinctTerm:
-            try:
-                for doc in list(self.index['posting'][q].keys()):
-                    doclist.add(doc)
-            except:
-                pass
-        print(doclist)
-        queryFeat = []
-        for t in distinctTerm:
-            try:
-                tf = query.count(t)
-                idf = 1 + math.log(self.index['doc count']/len(self.index['posting'][q]))
-                queryFeat.append(tf*idf)
-            except:
-                queryFeat.append(0)
-        print(queryFeat)
+        #Remove all term not existed in corpus
+        filtered = list(filter(lambda x: x in self.index, query))
+        distinctTerm = set(filtered)
+        #Get relevent document
+        for term in distinctTerm:
+            #Get relevent doc
+            for doc in list(self.index[term]['posting'].keys()):
+                doclist.add(doc)
+            #Term weighting
+            queryWeight[term] = filtered.count(term) * self.index[term]['idf']
+        #Term normalizing
+        queryNorm = 0
+        for term in queryWeight:
+            queryNorm += queryWeight[term]**2
+        queryNorm = math.sqrt(queryNorm)
+        for term in queryWeight:
+            queryWeight[term] /= queryNorm
+        #Get ranked document
         for doc in doclist:
-            featVector = []
-            for q in distinctTerm:
+            score = 0
+            for term in distinctTerm:
                 try:
-                    tf = self.index['posting'][q][doc]
-                    idf = 1 + math.log(self.index['doc count']/len(self.index['posting'][q]))
-                    featVector.append(tf*idf)
+                    score += self.index[term]['posting'][doc] * queryWeight[term]
                 except:
-                    featVector.append(0)
-            score = self.__l2score(queryFeat, featVector)
-            docName = os.path.splitext(self.id[doc])[0]
-            ranked.append((docName, score))
-            ranked.sort()
+                    pass
+            ranked.append((self.id[doc],score))
+        ranked.sort(key = lambda x:x[1], reverse = True)
         return ranked
-    def __l2score(self, a, b):
-        return numpy.linalg.norm(a-b)
+    def __cosine(self, a, b):
+        return (dot(a)*dot(b))/(norm(a)*norm(b))
         
         
