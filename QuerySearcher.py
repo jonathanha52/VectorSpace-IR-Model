@@ -20,7 +20,8 @@ class QuerySearcher:
             self.id = json.load(f)
     def search(self, query):
         #query: query parsed by query parser
-        queryWeight = {}
+        #queryWeight = {}
+        queryWeight = []
         doclist = set()
         ranked = []
         #Remove all term not existed in corpus
@@ -32,7 +33,9 @@ class QuerySearcher:
             for doc in list(self.index[term]['posting'].keys()):
                 doclist.add(doc)
             #Term weighting
-            queryWeight[term] = filtered.count(term) * self.index[term]['idf']
+            #queryWeight[term] = filtered.count(term) * self.index[term]['idf']
+            queryWeight.append(filtered.count(term) * self.index[term]['idf'])
+        '''
         #Term normalizing
         queryNorm = 0
         for term in queryWeight:
@@ -40,18 +43,22 @@ class QuerySearcher:
         queryNorm = math.sqrt(queryNorm)
         for term in queryWeight:
             queryWeight[term] /= queryNorm
+        '''
         #Get ranked document
         for doc in doclist:
-            score = 0
+            #score = 0
+            featVec = []
             for term in distinctTerm:
                 try:
-                    score += self.index[term]['posting'][doc] * queryWeight[term]
+                    #score += self.index[term]['posting'][doc] * queryWeight[term]
+                    featVec.append(self.index[term]['posting'][doc])
                 except:
-                    pass
+                    featVec.append(0)
+            score = self.__cosine(queryWeight, featVec)
             ranked.append((self.id[doc],score))
         ranked.sort(key = lambda x:x[1], reverse = True)
         return ranked
     def __cosine(self, a, b):
-        return (dot(a)*dot(b))/(norm(a)*norm(b))
+        return (dot(a,b))/(norm(a)*norm(b))
         
         

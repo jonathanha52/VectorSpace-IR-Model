@@ -18,7 +18,6 @@ class CorpusIndexing:
             self.doc = json.load(f)
         #From now on is the indexing part, including:
         #1. Creating posting list
-        #2. Normalize
 
         #Creating posting list process
         #Each term is counted and multiply by idf of each term
@@ -36,7 +35,7 @@ class CorpusIndexing:
             self.index[term]['idf'] = math.log2(self.docCount / len(self.index[term]['posting']))
             for doc in self.index[term]['posting']:
                 self.index[term]['posting'][doc] *= self.index[term]['idf']
-        
+        '''
         #Calculating norm for each document
         self.norm = [0]*self.docCount
         for i in range(self.docCount):
@@ -50,10 +49,10 @@ class CorpusIndexing:
         for i, n in enumerate(self.norm):
             for term in self.index:
                 try:
-                    self.index[term]['posting'][str(i)] = self.index[term]['posting'][str(i)]/n
+                    self.index[term]['posting'][str(i)] /= n
                 except:
                     pass
-        
+        '''
         #Export indexing
         with open(os.path.join(path,'index.json'), 'w+') as f:
             json.dump(self.index, f)
