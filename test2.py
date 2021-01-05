@@ -3,6 +3,10 @@ import os
 from VectorSpaceIR import VectorSpaceIR
 from evaluation import APScore
 
+'''
+Testing created for testing indexing and querying using WordNet Lemmatizer
+'''
+
 if __name__ == '__main__':
     path =  'Cranfield'
     dirTest = os.path.join('TEST','query.txt')
@@ -28,7 +32,6 @@ if __name__ == '__main__':
                 for line in g.readlines():
                     groundtruth.append(line.split()[1])
             res = VSIr.search(query, lemma = True)
-            #print(res)
             if len(res) == 0:
                 AP.append(0)
                 count += 1

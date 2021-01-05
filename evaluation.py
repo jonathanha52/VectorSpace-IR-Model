@@ -1,8 +1,9 @@
-
 import os
+
 def APScore(res, gt):
-    PrecisionatRecall = {}
-    pInter = []
+    #APScore calculate average interpolated precision
+    PrecisionatRecall = {} #Used for mapping precision to corresponding recall level
+    pInter = []            #Storing interpolated precision value
     retrivedCount = len(res)
     sumP = 0
     Relevent = 0
@@ -19,6 +20,7 @@ def APScore(res, gt):
     return sum(pInter)/len(pInter)
 
 def getMaxP(r, par):
+    #Find highest precision at level r'>r
     pMax = 0
     for i in par:
         if i >= r and par[i] > pMax:

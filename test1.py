@@ -2,6 +2,11 @@ import time
 import os
 from VectorSpaceIR import VectorSpaceIR
 from evaluation import APScore
+
+
+'''
+Testing created for testing indexing and querying using Snowball stemmer
+'''
 if __name__ == '__main__':
     path =  'Cranfield'
     dirTest = os.path.join('TEST','query.txt')

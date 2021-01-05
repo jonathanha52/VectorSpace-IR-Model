@@ -16,10 +16,8 @@ class CorpusIndexing:
         #This will raise an exception if the preprocess step isn't done
         with open(os.path.join(path,'processed.json')) as f:
             self.doc = json.load(f)
-        #From now on is the indexing part, including:
-        #1. Creating posting list
 
-        #Creating posting list process
+        #Creating posting list
         #Each term is counted and multiply by idf of each term
         for idx in self.doc:
             self.docCount += 1
